@@ -39,6 +39,7 @@ dev-knowledge-base/
 ## 当前图鉴
 
 - [Windows 下 Codex 中文乱码：PowerShell 7 + UTF-8 解决记录](C:\github\dev-knowledge-base\docs\dev-env\codex\windows-powershell7-utf8.md)
+- [Windows 下 Codex 桌面版通过 Clash Verge 连接代理的配置与校验](C:\github\dev-knowledge-base\docs\dev-env\codex\windows-clash-verge-proxy.md)
 
 ## 收录范围
 
