@@ -26,6 +26,7 @@ dev-knowledge-base/
   docs/
     ai-tools/
     dev-env/
+      codex/
     git/
     network/
     terminal/
@@ -37,7 +38,7 @@ dev-knowledge-base/
 
 ## 当前图鉴
 
-- [Windows 下 Codex 中文乱码：PowerShell 7 + UTF-8 解决记录](C:\github\dev-knowledge-base\docs\dev-env\codex-windows-powershell7-utf8.md)
+- [Windows 下 Codex 中文乱码：PowerShell 7 + UTF-8 解决记录](C:\github\dev-knowledge-base\docs\dev-env\codex\windows-powershell7-utf8.md)
 
 ## 收录范围
 
