@@ -1,8 +1,8 @@
 # Windows 下 Codex 桌面版通过 Clash Verge 连接代理的配置与校验
 
-> 关联通用规则文档：  
-> [Windows 下 Clash 规则设计：给 AI 工具稳定翻墙的可复用模板](C:\github\ai-knowledge-base\docs\network\windows-clash-rules-for-ai-agents.md)  
-> 如果你要先搭一套可复用代理基线，再做 Codex 专项排障，建议先读该文档。
+> 先读通用规则文档（推荐）：  
+> [Windows 下 Clash 规则设计：给 AI 工具稳定翻墙的可复用模板](../../network/windows-clash-rules-for-ai-agents.md)  
+> 本文只补充 Codex 桌面版的专项现象与操作细节。
 
 ## 1. 问题现象
 

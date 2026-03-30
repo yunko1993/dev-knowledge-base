@@ -13,7 +13,9 @@
 ## 2. 适用范围
 
 - 操作系统：Windows
-- 代理工具：Clash Verge（其他 Clash 内核也可参考）
+- 代理工具：
+  - Clash Verge Rev：[clash-verge-rev](https://github.com/clash-verge-rev/clash-verge-rev)
+  - Clash Meta for Android：[ClashMetaForAndroid](https://github.com/MetaCubeX/ClashMetaForAndroid)
 - 代理模式：`rule`
 - 目标：让 AI 相关流量稳定走代理，国内常见站点尽量直连
 
@@ -179,10 +181,9 @@ curl.exe -I -x http://127.0.0.1:7897 https://api.openai.com
 ## 10. 与 Codex 专篇关系
 
 - 通用规则与排障基线：本文
-- Codex 桌面版专项步骤与现象：`docs/dev-env/codex/windows-clash-verge-proxy.md`
+- Codex 桌面版专项步骤与现象：[windows-clash-verge-proxy.md](../dev-env/codex/windows-clash-verge-proxy.md)
 
 建议维护方式：
 
 1. 规则基线变更先改本文
 2. 工具特定差异再回填到各自专篇
-
