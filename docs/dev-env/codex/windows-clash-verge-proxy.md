@@ -134,64 +134,8 @@ Codex -> 127.0.0.1:7897 -> Clash -> 按规则决定直连或代理
 - DOMAIN-KEYWORD,chatgpt,🤖 ChatGPT/AI
 ```
 
-### 可直接替换的精简示例
-
-下面这段只保留和 Codex / OpenAI 排障最相关的部分，适合作为参考：
-
-```yaml
-mixed-port: 7897
-allow-lan: true
-mode: rule
-log-level: info
-ipv6: false
-
-proxy-providers:
-  jms:
-    type: http
-    url: ""
-    interval: 3600
-    path: ./jms.yaml
-    proxy: 🚀 节点选择
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
-
-  flybird:
-    type: http
-    url: ""
-    interval: 3600
-    path: ./flybird.yaml
-    proxy: 🚀 节点选择
-    health-check:
-      enable: true
-      interval: 300
-      url: http://www.gstatic.com/generate_204
-
-proxy-groups:
-  - name: 🚀 节点选择
-    type: select
-    use:
-      - jms
-      - flybird
-
-  - name: 🤖 ChatGPT/AI
-    type: select
-    use:
-      - jms
-      - flybird
-    proxies:
-      - 🚀 节点选择
-
-rules:
-  - DOMAIN-SUFFIX,openai.com,🤖 ChatGPT/AI
-  - DOMAIN-SUFFIX,oaistatic.com,🤖 ChatGPT/AI
-  - DOMAIN-SUFFIX,oaiusercontent.com,🤖 ChatGPT/AI
-  - DOMAIN,chatgpt.com,🤖 ChatGPT/AI
-  - DOMAIN-SUFFIX,chatgpt.com,🤖 ChatGPT/AI
-  - DOMAIN-KEYWORD,chatgpt,🤖 ChatGPT/AI
-  - MATCH,🚀 节点选择
-```
+完整配置模板请看通用文档：  
+[Windows 下 Clash 规则设计：给 AI 工具稳定翻墙的可复用模板](../../network/windows-clash-rules-for-ai-agents.md)
 
 ## 6. 怎么校验配置有没有生效
 
