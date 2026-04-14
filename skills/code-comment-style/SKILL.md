@@ -1,6 +1,11 @@
 ---
 name: code-comment-style
-description: Use when writing, refactoring, reviewing, or documenting code where comments should be improved. Prefer structured, intent-focused comments with Chinese business-context style when appropriate: section headers for major phases, tagged comments for risks/performance/business constraints, Javadoc for public methods, and concise inline notes for non-obvious logic. Avoid noisy comments that only repeat syntax.
+description: >-
+  Use when writing, refactoring, reviewing, or documenting code where comments should be improved.
+  Prefer structured, intent-focused comments with Chinese business-context style when appropriate,
+  including section headers for major phases, tagged comments for risks/performance/business constraints,
+  Javadoc for public methods, and concise inline notes for non-obvious logic.
+  Avoid noisy comments that only repeat syntax.
 ---
 
 # Code Comment Style
@@ -128,4 +133,5 @@ item.setValidationStatus(1);
 3. 发现误导性注释时，优先更新或删除。
 4. 不为了“显得注释多”而堆注释。
 5. 注释要能帮助未来 AI agent 继续排查、修改或验证。
+
 
