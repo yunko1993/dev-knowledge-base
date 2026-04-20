@@ -27,20 +27,20 @@ description: >-
 推荐：
 
 ```java
-List<TaskResourceParamBinding> values =
-        paramsByResource.computeIfAbsent(resourceCode, key -> new ArrayList<>());
-values.add(paramBinding);
+List<Book> books =
+        booksByCategory.computeIfAbsent(categoryCode, key -> new ArrayList<>());
+books.add(book);
 ```
 
 不推荐：
 
 ```java
-List<TaskResourceParamBinding> values = paramsByResource.get(resourceCode);
-if (values == null) {
-    values = new ArrayList<>();
-    paramsByResource.put(resourceCode, values);
+List<Book> books = booksByCategory.get(categoryCode);
+if (books == null) {
+    books = new ArrayList<>();
+    booksByCategory.put(categoryCode, books);
 }
-values.add(paramBinding);
+books.add(book);
 ```
 
 ### 2. 默认值读取
@@ -48,7 +48,7 @@ values.add(paramBinding);
 简单默认值读取优先使用 `getOrDefault`。
 
 ```java
-List<ReqItem> items = itemMap.getOrDefault(taskId, Collections.emptyList());
+List<Student> students = studentsByClass.getOrDefault(classId, Collections.emptyList());
 ```
 
 ### 3. 条件删除
@@ -56,7 +56,7 @@ List<ReqItem> items = itemMap.getOrDefault(taskId, Collections.emptyList());
 遍历集合并按条件删除时，优先使用 `removeIf`。
 
 ```java
-items.removeIf(item -> item.getDirectoryId() == null);
+students.removeIf(student -> student.getStudentNo() == null);
 ```
 
 ### 4. 字符串空值判断
@@ -92,17 +92,17 @@ value == null || value.trim().length() == 0
 示例：
 
 ```java
-Map<Long, List<ReqItem>> itemsByTask = items.stream()
-        .filter(item -> item.getTaskId() != null)
-        .collect(Collectors.groupingBy(ReqItem::getTaskId));
+Map<Long, List<Student>> studentsByClass = students.stream()
+        .filter(student -> student.getClassId() != null)
+        .collect(Collectors.groupingBy(Student::getClassId));
 ```
 
 使用 `toMap` 时必须处理重复 key 风险：
 
 ```java
-Map<Long, ReqItem> itemMap = items.stream()
+Map<Long, Student> studentMap = students.stream()
         .collect(Collectors.toMap(
-                ReqItem::getId,
+                Student::getId,
                 Function.identity(),
                 (oldValue, newValue) -> oldValue
         ));
@@ -170,8 +170,7 @@ Optional.ofNullable(item).ifPresent(i -> doManySideEffects(i));
 例如：
 
 ```java
-// 按资源编码聚合同一类参数，后续统一生成资源维度的绑定关系。
-List<TaskResourceParamBinding> values =
-        paramsByResource.computeIfAbsent(resourceCode, key -> new ArrayList<>());
+// 按分类编码聚合同类图书，后续统一生成分类维度的展示数据。
+List<Book> books =
+        booksByCategory.computeIfAbsent(categoryCode, key -> new ArrayList<>());
 ```
-
