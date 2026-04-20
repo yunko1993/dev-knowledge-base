@@ -4,7 +4,8 @@ description: >-
   Use when writing, refactoring, reviewing, or documenting code where comments should be improved.
   Prefer structured, intent-focused comments with Chinese business-context style when appropriate,
   including section headers for major phases, tagged comments for risks/performance/business constraints,
-  Javadoc for public methods, and concise inline notes for non-obvious logic.
+  Javadoc for public methods in Controller/Service/ServiceImpl classes, and concise call-site notes
+  before important private helper method calls inside long public methods.
   Avoid noisy comments that only repeat syntax.
 ---
 
@@ -23,7 +24,9 @@ description: >-
 3. 用“核心 / 排雷 / 性能 / 业务 / 兼容”这类标签提醒维护者。
 4. 对公共方法、复杂校验、批处理、查重、缓存、状态回写写清楚输入、输出和副作用。
 5. 编号只用于同一个方法内部的连续步骤，跨方法不要硬套 1/2/3。
-6. 不给简单赋值、普通 getter/setter、显而易见的 if/for 贴废话注释。
+6. 长 public 方法里每个关键 private 调用点前，都要写一句“这一步的业务目的”。
+7. Controller 的 public 接口也要写 Javadoc，说明接口用途、关键参数、返回结果和副作用。
+8. 不给简单赋值、普通 getter/setter、显而易见的 if/for 贴废话注释。
 
 ## 什么时候必须补注释
 
@@ -37,6 +40,8 @@ description: >-
 6. 日期时间、编码、路径、代理、操作系统差异、兼容性处理。
 7. 外部接口、第三方服务、文件导入导出、权限差异。
 8. AI 或维护者很可能“看起来能简化，其实不能简化”的代码。
+9. Controller 对外暴露的 public 接口，尤其是导入、生成、下发、审核、删除、状态变更类接口。
+10. 长 public 方法中调用多个 private 小方法的位置，必须解释每个调用对应的业务步骤。
 
 ## 推荐注释模板
 
@@ -112,9 +117,34 @@ public Report getAnalysisReport(...) { ... }
 // 重复错误也要写入 errorJson，否则前端只有 isDuplicate 标记时无法展示具体原因。
 ```
 
+### 6. 长方法中的 private 调用点说明
+
+如果一个 public 方法较长，并且连续调用多个 private 小方法，不要只给 private 方法本身写注释。
+
+在调用点也要写一句，说明这一步在当前业务流程里的作用。
+
+推荐：
+
+```java
+// 先按成员单位视角汇总需求明细，后续建议生成只基于这些聚合结果。
+List<ReqItemSummary> summaries = buildMemberUnitSummaries(items);
+
+// 将聚合结果落库为分析条件，确保页面重新进入时能复用同一批口径。
+saveAnalysisConditions(mobTaskId, summaries, currentUserId);
+```
+
+不推荐：
+
+```java
+buildMemberUnitSummaries(items);
+saveAnalysisConditions(mobTaskId, summaries, currentUserId);
+```
+
 ## Javadoc 风格
 
-公共方法、服务入口、复杂私有方法建议写 Javadoc。
+Controller 接口、Service 接口、ServiceImpl 的 public 方法、复杂私有方法建议写 Javadoc。
+
+不要只在 ServiceImpl 写 Javadoc。Controller 是外部入口，读代码时经常会先从 Controller 追到 Service，因此 Controller 的 public 方法也应该说明接口语义。
 
 写清楚：
 
@@ -122,6 +152,7 @@ public Report getAnalysisReport(...) { ... }
 2. 参数是否允许为空。
 3. 返回值代表什么。
 4. 是否会修改入参对象或回写状态。
+5. Controller 方法还要写清楚：接口面向哪个页面/动作、是否会触发状态变更、是否会产生导入/生成/下发等副作用。
 
 示例：
 
@@ -132,6 +163,17 @@ public Report getAnalysisReport(...) { ... }
  * @param item 当前需要校验的明细项，会被回写目录ID、异常状态和错误JSON
  * @param allItemsInTask 当前任务下的所有明细；批量导入时用于任务内查重，单条校验可为空
  * @return 校验结果，包含字段级错误和解析出的目录ID
+ */
+```
+
+Controller 示例：
+
+```java
+/**
+ * 生成动员任务分析建议，供动员任务详情页点击“分析”时调用。
+ *
+ * @param taskId 动员任务ID，对应页面上的任务主键
+ * @return 分析结果摘要；如果任务明细为空，会返回业务错误提示
  */
 ```
 
@@ -162,7 +204,8 @@ item.setValidationStatus(1);
 1. 新增复杂逻辑时，同步补关键注释。
 2. 改动已有逻辑时，检查附近注释是否已经过期。
 3. 发现误导性注释时，优先更新或删除。
-4. 不为了“显得注释多”而堆注释。
-5. 注释要能帮助未来 AI agent 继续排查、修改或验证。
+4. 如果补注释后仍然感觉“偏少”，优先检查 Controller public 方法、长 public 方法调用点、状态回写处、异常分支是否漏写。
+5. 不为了“显得注释多”而堆注释，但宁可多写一句业务目的，也不要让读者反复跳转 private 方法猜流程。
+6. 注释要能帮助未来 AI agent 继续排查、修改或验证。
 
 
