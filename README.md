@@ -83,6 +83,7 @@ ai-knowledge-base/
 ## 可复用 Skills
 
 - [code-comment-style：让 Codex 补更有价值的代码注释](C:\github\ai-knowledge-base\skills\code-comment-style\SKILL.md)
+- [java8-idiomatic-style：让 Codex 写出更符合 Java 8 / IDEA Inspection 的代码](C:\github\ai-knowledge-base\skills\java8-idiomatic-style\SKILL.md)
 
 ## 收录范围
 
