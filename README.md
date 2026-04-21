@@ -78,6 +78,7 @@ ai-knowledge-base/
 - [Windows 下 Codex 中文乱码：PowerShell 7 + UTF-8 解决记录](docs/dev-env/codex/windows-powershell7-utf8.md)
 - [Windows 下 Codex 桌面版通过 Clash Verge 连接代理的配置与校验](docs/dev-env/codex/windows-clash-verge-proxy.md)
 - [在 Codex 中让模型直接连接本机数据库（Windows / MySQL）](docs/dev-env/codex/codex-direct-db-connection.md)
+- [Windows 下用 Codex + Obsidian + GitHub 管理知识库](docs/dev-env/codex/windows-codex-obsidian-github-knowledge-workflow.md)
 - [Windows 下 Clash 规则设计：给 AI 工具稳定翻墙的可复用模板](docs/network/windows-clash-rules-for-ai-agents.md)
 
 ## 可复用 Skills
