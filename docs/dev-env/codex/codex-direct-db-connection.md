@@ -76,6 +76,8 @@ mysql -h <host> -P <port> -u <user> -p -D <database> -e "SELECT 1;"
 
 出现 `1` 代表基础链路可用。
 
+注意：如果项目配置文件里的密码看起来像 Base64，不要默认解码。先按应用实际配置值原样连接；只有确认项目启动时有专门的解密逻辑，才按对应规则处理。
+
 ### 步骤 5：执行只读 SQL
 
 ```sql
@@ -116,6 +118,72 @@ SELECT COUNT(*) AS total FROM your_table_name;
 1. 检查网络与白名单。
 2. 检查账号权限与库名。
 3. 检查是否连错环境。
+
+### 5.4 Codex PowerShell 报 Windows socket 10106
+
+现象：
+
+```text
+ERROR 2004 (HY000): Can't create TCP/IP socket (10106)
+```
+
+或 PowerShell / Java / Node 在 shell 进程内创建 socket 时报类似错误：
+
+```text
+无法加载或初始化请求的服务提供程序
+Unrecognized Windows Sockets error: 10106: socket
+```
+
+判断方式：
+
+1. `mysql --version` 正常，说明客户端已安装。
+2. `mysql -h ... -P ...` 仍在创建 TCP socket 阶段失败，且不是 `Access denied`。
+3. 用 Codex 的 Node REPL MCP 测试 TCP：
+
+```javascript
+const net = await import("node:net");
+const result = await new Promise((resolve) => {
+  const socket = net.createConnection({ host: "<host>", port: <port>, timeout: 5000 });
+  socket.on("connect", () => { socket.destroy(); resolve("NODE_TCP_CONNECTED"); });
+  socket.on("timeout", () => { socket.destroy(); resolve("NODE_TCP_TIMEOUT"); });
+  socket.on("error", (err) => resolve(`NODE_TCP_ERROR: ${err.code} ${err.message}`));
+});
+nodeRepl.write(result);
+```
+
+如果 Node REPL 返回 `NODE_TCP_CONNECTED`，说明数据库网络是通的，问题在当前 Codex shell / PowerShell 进程链路的 Windows socket provider，不是 MySQL 服务端。
+
+处理建议：
+
+1. 对只读排查，优先换一条可用通道验证，例如 Node REPL MCP 或本机正常终端。
+2. 不要在这种情况下误判为库挂了、端口不通、账号错误。
+3. 如果 Node REPL 能到服务端但认证失败，错误会变成类似：
+
+```text
+Access denied for user '<user>'@'<client_ip>' (using password: YES)
+```
+
+这时才继续查账号、密码、来源 IP 授权。
+
+### 5.5 MySQL 配置密码不要擅自 Base64 解码
+
+示例：某项目配置中密码为：
+
+```yaml
+password: 8mK2pQv9RzL4xTn7
+```
+
+排查结论：该值虽然像 Base64，但数据库认证要求使用配置原文作为密码；解码一层或两层都会导致：
+
+```text
+Access denied for user '<user>'@'<client_ip>' (using password: YES)
+```
+
+所以标准流程是：
+
+1. 先用配置原文连接。
+2. 原文失败，再确认项目是否接入了配置解密组件。
+3. 不要仅凭“像 Base64”就自动解码。
 
 ## 6. 安全基线
 
