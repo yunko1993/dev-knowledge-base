@@ -1,4 +1,4 @@
-# 在 Codex 中让模型直接连接本机数据库（Windows / MySQL）
+# 在 Codex 中让模型直接连接本机数据库（Windows / MySQL / PostgreSQL）
 
 ## 1. 目标（面向 AI 自治）
 
@@ -123,11 +123,27 @@ SELECT COUNT(*) AS total FROM your_table_name;
 
 现象：
 
+MySQL 可能表现为：
+
 ```text
 ERROR 2004 (HY000): Can't create TCP/IP socket (10106)
 ```
 
-或 PowerShell / Java / Node 在 shell 进程内创建 socket 时报类似错误：
+PostgreSQL 可能表现为：
+
+```text
+psql: error: connection to server at "127.0.0.1", port 5432 failed:
+could not create socket: The requested service provider could not be loaded or initialized. (0x0000277A/10106)
+```
+
+Java / PostgreSQL JDBC 可能表现为：
+
+```text
+org.postgresql.util.PSQLException: 尝试连接已失败
+Caused by: java.net.SocketException: Unrecognized Windows Sockets error: 10106: create
+```
+
+或 PowerShell / Java / Python 等在 Codex shell 子进程内创建 socket 时报类似错误：
 
 ```text
 无法加载或初始化请求的服务提供程序
@@ -136,9 +152,10 @@ Unrecognized Windows Sockets error: 10106: socket
 
 判断方式：
 
-1. `mysql --version` 正常，说明客户端已安装。
-2. `mysql -h ... -P ...` 仍在创建 TCP socket 阶段失败，且不是 `Access denied`。
-3. 用 Codex 的 Node REPL MCP 测试 TCP：
+1. `mysql --version` 或 `psql --version` 正常，说明客户端已安装。
+2. `mysql -h ... -P ...` 或 `psql -h ... -p ...` 仍在创建 TCP socket 阶段失败。
+3. 失败信息不是账号密码类错误，例如 MySQL 的 `Access denied` 或 PostgreSQL 的 `password authentication failed`。
+4. 用 Codex 的 Node REPL MCP 测试 TCP：
 
 ```javascript
 const net = await import("node:net");
@@ -151,19 +168,28 @@ const result = await new Promise((resolve) => {
 nodeRepl.write(result);
 ```
 
-如果 Node REPL 返回 `NODE_TCP_CONNECTED`，说明数据库网络是通的，问题在当前 Codex shell / PowerShell 进程链路的 Windows socket provider，不是 MySQL 服务端。
+如果 Node REPL 返回 `NODE_TCP_CONNECTED`，说明数据库网络是通的，问题在当前 Codex shell / PowerShell 子进程链路的 Windows socket provider，不是 MySQL / PostgreSQL 服务端，也不是端口没开。
 
 处理建议：
 
 1. 对只读排查，优先换一条可用通道验证，例如 Node REPL MCP 或本机正常终端。
 2. 不要在这种情况下误判为库挂了、端口不通、账号错误。
-3. 如果 Node REPL 能到服务端但认证失败，错误会变成类似：
+3. 如果 Node REPL 能到服务端但认证失败，MySQL 错误会变成类似：
 
 ```text
 Access denied for user '<user>'@'<client_ip>' (using password: YES)
 ```
 
+PostgreSQL 错误会变成类似：
+
+```text
+FATAL: password authentication failed for user "<user>"
+FATAL: database "<database>" does not exist
+```
+
 这时才继续查账号、密码、来源 IP 授权。
+
+补充：如果只是本机 PostgreSQL 联调，且 Codex shell 的 `psql` 触发 10106，可以继续用 Node REPL MCP 作为临时直连通道完成建表、查数、迁移测试；不要把这个问题扩大判断成所有 PostgreSQL 客户端都不可用。
 
 ### 5.5 MySQL 配置密码不要擅自 Base64 解码
 

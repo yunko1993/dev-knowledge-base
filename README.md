@@ -85,6 +85,7 @@ ai-knowledge-base/
 ## 可复用 Skills
 
 - [code-comment-style：让 Codex 补更有价值的代码注释](skills/code-comment-style/SKILL.md)
+- [codex-local-db-connection：让 Codex 在 Windows 下按固定流程排查和连接本机 MySQL / PostgreSQL](skills/codex-local-db-connection/SKILL.md)
 - [java8-idiomatic-style：让 Codex 写出更符合 Java 8 / IDEA Inspection 的代码](skills/java8-idiomatic-style/SKILL.md)
 - [windows-rg-path：让 Codex 在 Windows 下优先命中可用的独立 rg.exe](skills/windows-rg-path/SKILL.md)
 
